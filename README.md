@@ -22,7 +22,7 @@
 **:warning: = HAS IMPORTANT WARNING / POTENTIAL HEADACHE**
 - [How to Download](#how-to-download)
 - [How to Import](#how-to-import)
-- [**:warning:** Start G-code](#start-g-code)
+- [Start G-Code](#start-g-code)
 - [**:warning:** Volumetric Speed Limiting](#volumetric-speed-limiting)
 - [**:warning:** Accelerations](#accelerations)
 - [**:warning:** Extrusion Multiplier](#extrusion-multiplier)
@@ -31,6 +31,7 @@
 - ["45 Degree" Profile vs Standard Profile](#45-degree-profile-vs-standard-profile)
 - [Infill Line Widths](#infill-line-widths)
 - [Tips and Tricks](#tips-and-tricks)
+    - [Changing PA Based on Nozzle Size](#changing-pa-based-on-nozzle-size)
     - [Part Spacing / Plating](#part-spacing--plating)
     - [Advanced Bridging Over Holes (Sacrificial Bridges)](#advanced-bridging-over-holes-sacrificial-bridges)
 - [**Profile Change Log**](#profile-change-log)
@@ -58,15 +59,14 @@ Select the **\.ini** file of the profile you want to import.
 Open each tab and click the floppy icon to save the profile. You may have to pick a new name. (you can type in the box that pops up!)
 - ![](Images/Saving.png) 
 
-# Start G-code
-### **:warning: If you are not yet passing temperature variables to `PRINT_START`, replace everything in this box with just `PRINT_START`\***
-- *\* or the appropriate start g-code for your particular printer.*
+# Start G-Code
 
-See the [:page_facing_up:"Passing Slicer Variables to `PRINT_START`"](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/passing_slicer_variables.md) section of my tuning guide for more information (rationale & instructions).
+If you are passing temperatures to your PRINT_START macro, make sure to uncomment/modify the start gcode appropriately.
 
-- If you are new to this, don't worry about this yet - come back to it later on.
+See the [:page_facing_up:"Passing Slicer Variables to `PRINT_START`"](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/passing_slicer_variables.md) section of my tuning guide for more information.
 
 ![](Images/StartGcode.png)  
+
 # Volumetric Speed Limiting
 ### **:warning: It is very important that you update the volumetric speed setting, otherwise you may have extruder skipping and/or filament grinding.**
 
@@ -146,11 +146,11 @@ I use Stealthburner with a Sunon 5015 fan.
 ![](Images/FanSpeeds.png)  
 
 # Nozzle Flats
-### **:warning: My profiles use some aggressive line widths (180% infill, 140% solid infill), which may not work well with some pointier nozzles.**
+### **:warning: My profiles use some aggressive line widths, which may not work well with some pointier nozzles.**
 
 You will only get good results **if your nozzle flat is wide enough to support the requested line width.** You can get a rough measurement of your nozzle flat with calipers.
 
-This can cause thicker extrusion lines to curl up around the nozzle - and even occasionally cause gapping issues with the 125% perimeters, if it's pointy enough.
+This can cause thicker extrusion lines (like the infill) to curl up around the nozzle - and even occasionally cause gapping issues with the thinner perimeters, if it's pointy enough.
 
 ## May cause issues.
 
@@ -223,6 +223,27 @@ If you need greater top layer support, or are printing decorative / low infill p
 - ![](Images/infill-110.png) 
 
 # Tips and Tricks
+## Changing PA Based on Nozzle Size
+
+You can add the below code snippet to your filament's **custom g-code** section in order to have different PA values for different nozzle sizes. Wider nozzles need lower PA. (Of course - modify it appropriately and replace the zeroes with the actual PA values.)
+
+```
+{if printer_settings_id =~/.*Voron.*/ and nozzle_diameter[0]==0.4}SET_PRESSURE_ADVANCE ADVANCE=0
+{elsif printer_settings_id =~/.*Voron.*/ and nozzle_diameter[0]==0.6}SET_PRESSURE_ADVANCE ADVANCE=0
+{elsif printer_settings_id =~/.*Voron.*/ and nozzle_diameter[0]==0.8}SET_PRESSURE_ADVANCE ADVANCE=0
+{endif}
+```
+
+This logic says:
+- IF printer settings profile name contains "Voron" (using regex)
+- AND nozzle size equals *\<value>*
+- THEN insert the gcode (SET_ PRESSURE ADVANCE ADVANCE=*\<value>*).
+
+Macro syntax: https://help.prusa3d.com/article/macros_1775
+- The "=\~" operator uses regex enlosed by forward slashes (=\~/regex/).
+- The "==" operator can be used for an exact match instead if you wish (=="string").
+
+
 ## Part Spacing / Plating
 Right click the "arrange" button to change part spacing. 
 
@@ -232,7 +253,7 @@ Then click the arrange button (or press A), to automatically arrange everything.
 
 Too close can introduce cooling issues. I tend to spread parts out when I can.
 ## Advanced Bridging Over Holes (Sacrificial Bridges)
-*This section was contributed by [akhamar](https://github.com/akhamar). Thanks!*
+*This section was contributed by [:page_facing_up:akhamar](https://github.com/akhamar). Thanks!*
 
 To avoid the need to add tapered screw holes over countersinks, you can instead use a setting in SuperSlicer that allows for bridging over holes.
 
@@ -259,11 +280,35 @@ Rather than having to re-import the profiles when updates are made, please check
 
 Use **ctrl + f** in SuperSlicer to find these settings by their internal names below.
 
+- **2022-10-06**
+    - ***extrusion_width*** to 115% (was 125%)
+        - This sets the default extrusion width. Any other widths set to 0 will use this default.
+        - Some people had perimeter gapping issues at 125%.
+    - ***bridged_infill_margin*** to 5mm (was 200%)
+        - Can help edge pillowing in features floating on infill, especially with lower infill densities.
+    - ***external_infill_margin*** to 4mm (was 150%)
+        - Can help edge pillowing in features floating on infill, especially with lower infill densities.
+    - ***first_layer_extrusion_width*** to 125% (was 0 / equal to default)
+        - Still the same width as before, but the default width changed so I had to make it static.
+    - ***infill_extrusion_width*** to 160% (was 180%)
+        - Some people were having layer shifting and infill gouging issues at 180%.
+    - ***support_material_speed*** to 120 (was 150)
+        - Less likely to knock over supports in PIF profiles if enabled. It was already 120 in the decorative profile.
+    - ***skirts*** to 1 (was 0)
+        - For those without a nozzle brush and/or purge line.
+    - ***filament gcode*** 
+        - Added example logic for nozzle-dependent PA.
+    - ***z_step*** to 0.01 (was 0.04).
+        - This setting rounds layer heights to even multiples of this value.
+        - Setting it to 0.01 allows for finer layer height control.
+        - The *actual* "full step distance" is **0.04mm** on a V2 w/ 1.8 degree Z motors. 0.01 still keeps it at quarter-stepping, which is more than good enough. 
+            - In reality, though, a number of factors keep the motors from actually sitting at perfect full/half/quarter steps (QGL, Z offset, mesh, etc). This setting is of arguable importance for most printers. There's an argument to be made for stopping at the same position WITHIN each full step, but I haven't tested this and haven't noticed much difference.
+    - Decorative profile: ***bottom_solid_layers*** to 3 (was 5)
 - **2022-08-16:**
     - ***solid_over_perimeters*** to 0 (was 2 / default)
         - This could cause pillowing issues on internal slopes, particularly with small layer heights.
 - **2022-08-09:**
-    - Set default line width to 125% and change all 120% values to 0 so that they use default (just for rounder numbers, e.g. 0.5mm widths instead of 0.48)
+    - Set default line width to ~~125%~~  *115% (see 2022-10-06)* and change all 120% values to 0 so that they use default (just for rounder numbers, e.g. 0.5mm widths instead of 0.48)
 - **2022-08-08:**
     - Add decorative 45 degree profile.
 - **2022-07-25:**
@@ -274,8 +319,8 @@ Use **ctrl + f** in SuperSlicer to find these settings by their internal names b
     - ***extra_perimeters_overhangs*** enabled.
         - This being disabled could cause gapping issues when this profile is used for decorative parts with fewer walls (or extreme overhangs). It should not kick in for most Voron parts.
 - **2022-05-25:**
-    - ***perimeter_extrusion_width*** to ~~120%~~ 125%
-        - For more strength.
+    - ~~***perimeter_extrusion_width*** to ~~120%~~ 125%~~
+        - ~~For more strength.~~
     - ***bridge_speed_internal*** to 100% (was 180mm/s)
         - This will match your normal bridge speed. 180mm/s was causing the internal bridges to not always attach.
     - ***curve_smoothing_angle_convex*** and ***curve_smoothing_angle_concaver*** to default.
@@ -323,9 +368,9 @@ Use **ctrl + f** in SuperSlicer to find these settings by their internal names b
 - **2022-02-10:** 
     - Change ***infill_speed*** to **300** ~~and set **max_print_speed** back to default.~~
         - ***infill_speed*** was previously **0**. 
-            - This was not always reaching maximum volumetric speed, due to a misunderstanding on my part of [how auto-speed works](https://github.com/supermerill/SuperSlicer/issues/1629#issuecomment-1013791149). 
+            - This was not always reaching maximum volumetric speed, due to a misunderstanding on my part of [:page_facing_up:how auto-speed works](https://github.com/supermerill/SuperSlicer/issues/1629#issuecomment-1013791149). 
             - Setting it to a maximum speed value (instead of 0) better accomplishes my intended goal (maxing out the hotend's capability for infill). 
-                - See the [Volumetric Speed / Auto Speed](#volumetric-speed--auto-speed) section for an updated (corrected) explanation.
+                - See the [:pushpin:Volumetric Speed / Auto Speed](#volumetric-speed--auto-speed) section for an updated (corrected) explanation.
         - ~~**max_print_speed** was previously 300.~~
             - ~~This setting does not universally limit in the same way that the volumetric speed limit does (for some reason), so it's redundant and confusing to leave it on.~~
     - Change ***support_material_speed*** to **150**.
