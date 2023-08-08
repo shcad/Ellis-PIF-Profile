@@ -1,41 +1,61 @@
-## **Please <ins>read each section</ins>**, especially anything marked with ":warning:".
-### **These are important warnings that may cause you issues if missed.**
+## **Please <ins>read each section</ins>**, especially anything marked with ":warning:". **These are important warnings that may cause you issues if missed.**
 
 # Important Notes
 
-- :warning: **Required SuperSlicer version:** [:page_facing_up:**2.4.58.2**](https://github.com/supermerill/SuperSlicer/releases/tag/2.4.58.2) (last update: 2022-04-11)
-    - **You may want to back up your `%appdata%\SuperSlicer` folder before updating, just in case.**
-    - **Use different SS versions at your own peril.**
-        - Newer versions often introduce new bugs or defaults, and older versions may not be compatible with certain settings (or will just error when importing the profile)
-        - I will update this as I test newer versions.
-        - There is a [:page_facing_up:known bug](https://github.com/AndrewEllis93/Ellis-PIF-Profile/issues/7#issuecomment-1098462899) in this version with the new wall thickess setting, causing it to show crazy values. Just ignore this setting for now (or click "expert" to hide it) - it does not affect anything.
-            - ![](/Images/bug.png)
-- **:warning:This profile is more aggressive than most stock profiles, and some things may also need turning down if your printer is still teething.**
-    - **:warning:This profile's speeds/accels are tuned for linear rail CoreXY (specifically MY personal V2). YOUR RESULTS MAY VARY.** Your own printer, and especially other printer types (Switchwire, Legacy, others), will likely need lower speeds and accelerations. 
-    - I actually use the same profiles on my Ender 3, just with speeds and accelerations turned down.
-- See my [:page_facing_up:tuning guide](https://github.com/AndrewEllis93/Print-Tuning-Guide)! (primarily written for Klipper printers)
-- You can find the bed models and textures I am using in [:page_facing_up:here](https://github.com/VoronDesign/Voron-Extras/tree/main/Bed_Models).
-- Support my drinking habits:
+:warning: **Required SuperSlicer version:** [:page_facing_up:**2.4.58.5**](https://github.com/supermerill/SuperSlicer/releases/tag/2.4.58.5) (last update: 2022-11-07)
+
+- **You may want to back up your `%appdata%\SuperSlicer` folder before updating, just in case.**
+- **Use different SS versions at your own peril.**
+    - Newer versions often introduce new bugs or defaults, and older versions may not be compatible with certain settings (or will just error when importing the profile)
+    - I will update this as I test newer versions.
+
+**:warning: This profile's speeds/accels are tuned for linear rail CoreXY (specifically MY personal V2).**
+- Your own printer, and especially other printer types, may need lower speeds and accelerations. 
+- That said, these speeds are perfectly achievable on any well-built stock V2/Trident/V0.
+
+---
+
+# Introduction
+
+**See my [:page_facing_up:tuning guide](https://github.com/AndrewEllis93/Print-Tuning-Guide) too!**
+
+Originally this repo was set up to share my own profiles as-is, plastered with warnings of what to turn down. Over time, however, they have become more and more tailored for sharing and for the community at large.
+
+SuperSlicer can be tricky. There are a few problematic "landmine" defaults. These profiles try to remove as many of those headaches as possible, to hopefully ease your transition. I have spent a lot of time experimenting with different settings to hopefully save others from having to repeat the same troubleshooting. The [:pushpin:change log](#profile-change-log) tells a story.
+
+These profiles can work well on **any printer**, provided you adjust the speeds, accels, machine limits/dimensions, and volumetric flow limit accordingly. I actually use the same profiles on my Ender 3.
+
+These profiles are constantly evolving. Please check the [:pushpin:change log](#profile-change-log) occasionally to grab the new settings/findings, so you don't have to reimport the entire profile.
+
+You can find the bed models and textures I am using in [:page_facing_up:here](https://github.com/VoronDesign/Voron-Extras/tree/main/Bed_Models).
+
+Support my drinking habits:
 [![](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/paypalme/AndrewEllis93)
+
+---
 
 # Table of Contents
 **:warning: = HAS IMPORTANT WARNING / POTENTIAL HEADACHE**
 - [How to Download](#how-to-download)
 - [How to Import](#how-to-import)
 - [Start G-Code](#start-g-code)
-- [**:warning:** Volumetric Speed Limiting](#volumetric-speed-limiting)
-- [**:warning:** Accelerations](#accelerations)
+- [Volumetric Speed Limiting](#volumetric-speed-limiting)
+- [Accelerations](#accelerations)
 - [**:warning:** Extrusion Multiplier](#extrusion-multiplier)
 - [**:warning:** Cooling](#cooling)
 - [**:warning:** Nozzle Flats](#nozzle-flats)
 - ["45 Degree" Profile vs Standard Profile](#45-degree-profile-vs-standard-profile)
 - [Infill Line Widths](#infill-line-widths)
-- [Tips and Tricks](#tips-and-tricks)
+- [Suggested Changes for PLA](#suggested-changes-for-pla)
+---
+- [Miscellaneous Tips and Tricks](#miscellaneous-tips-and-tricks)
     - [Changing PA Based on Nozzle Size](#changing-pa-based-on-nozzle-size)
     - [Part Spacing / Plating](#part-spacing--plating)
     - [Advanced Bridging Over Holes (Sacrificial Bridges)](#advanced-bridging-over-holes-sacrificial-bridges)
-- [**Profile Change Log**](#profile-change-log)
+---
+- [**:bulb:Profile Change Log**](#profile-change-log)
 
+---
 # How to Download
 **1)** Navigate to the .ini file.
 
@@ -48,6 +68,8 @@
 Alternatively, download the whole repository as .zip:
 
 - ![](Images/DownloadRepo.png) 
+
+- Or, if you have git installed, just `git clone https://github.com/AndrewEllis93/Ellis-SuperSlicer-Profiles.git` from your directory of choice.
 # How to Import
 If you downloaded the whole repository as .zip, extract it.
 
@@ -68,7 +90,10 @@ See the [:page_facing_up:"Passing Slicer Variables to `PRINT_START`"](https://gi
 ![](Images/StartGcode.png)  
 
 # Volumetric Speed Limiting
-### **:warning: It is very important that you update the volumetric speed setting, otherwise you may have extruder skipping and/or filament grinding.**
+
+The profiles folder contains profiles with this set to 11, 15, 24, and 30mm<sup>3</sup>/sec. Choose the appropriate value for your specific hotend (see below).
+
+**If you set this too high for your hotend, you may have extruder skipping and/or filament grinding.**
 
 ![](Images/VolumetricSpeed.png)  
 
@@ -80,51 +105,28 @@ Even when not pushing for speeds, I highly recommend putting an appropriate valu
 
 I keep my infill speed set to **300mm/s**. This is the absolute max I want my infill to ever print - but in reality, it will usually print more slowly due to this limit. This essentially prints infill **as fast as the hotend will allow, up to 300mm/s.**
 
-## Approximate Values
-
-These approximate values **assume a standard 0.4mm brass nozzle.** 
-| Hotend | Flow Rate (mm<sup>3</sup>/sec) |
-| --- | :---: |
-| E3D V6 | 11 |
-| E3D Revo | 15 |
-| Dragon SF | 15 |
-| Dragon HF | 24 |
-| Dragonfly BMO | 13 |
-| Rapido HF | 24 |
-| Rapido UHF | 30 |
-| Mosquito | 20 |
-| Mosquito Magnum | 30 |
-
-You will *usually* be okay using an approximate value from above and just lowering it if you have any issues. But - keep in mind that **there is also no guarantee that you will reach them.** There are many factors and variables that can cause your actual performance to vary.
-
-Nozzle properties may affect these numbers. For example:
-- Larger diameter nozzles will have higher flow rates
-- Hardened steel has a lower thermal conductivity and you may get lower flow rates unless you compensate with higher temperatures. 
-- Plated copper and tungsten carbide have higher thermal conductivity and might allow a bit higher flow rate. 
-- Bondtech CHT nozzles use a different internal geometry that allows higher flow rates.
-
-To test your own flow rate, see the [:page_facing_up:Determining Max Volumetric Flow Rate](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/determining_max_volumetric_flow_rate.md).
-
-You may also want to have a look at [:page_facing_up:Flow Dropoff](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/determining_max_volumetric_flow_rate.md#flow-dropoff).
+For more reading, formulas, and methods to test your own max flow rate, see [:page_facing_up:Determining Max Volumetric Flow Rate](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/determining_max_volumetric_flow_rate.md).
 
 # Accelerations
-**These accelerations are tuned for my personal V2 with input shaper.**
+These accelerations are tuned with my personal V2. As always, your results may vary.
 
 ![](Images/AccelControls.png)  
 
 ## Without Input Shaper
-### **:warning: You must reduce these accelerations if you aren't using input shaper, or for most other printer types.**
-
-You may get skipping otherwise (or just very violent toolhead movements). 
-
-For CoreXY, maybe around 4-5k max.
+Choose a profile fom a "No Input Shaper" folder.
 
 ## With Input Shaper
-Set all of the **non-travel*** accelerations to the max recommended acceleration for your shaper type and below (from the upper right area of your ADXL graph).
-- I would still personally recommend keeping low accelerations for things like perimeters. Your IS tune can drift over time with belt tensions and ringing can start to come back. I've also had some bulging issues when pushing perim accels. Set it and forget it.
+Choose a profile fom an "Input Shaper" folder.
 
-\* Travels can usually **exceed** the max recommended value if you wish. See [:page_facing_up:here](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/determining_max_speeds_accels.md) to determine your max travel accels.
-- The max recommended acceleration from input shaper tuning is actually the point where **excessive rounding/smoothing may occur, NOT your absolute maximum movement acceleration.**
+Find the max recommended acceleration from the upper right area of your resonance graph.
+
+If any of the profile's accelerations (*excluding* travel acceleration*) exceed your maximum, lower them down to that maximum value.
+
+- \*Travels can usually **exceed** the max if you wish. See [:page_facing_up:here](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/determining_max_speeds_accels.md) to determine your max travel accels.
+
+    - The max is the approximate point where excessive rounding/smoothing may occur, NOT your absolute maximum movement acceleration.
+
+I would still personally recommend keeping low accelerations for things like perimeters. Your IS tune can drift over time with belt tensions. I've also had some bulging issues when pushing perimeter accelerations. Set it and forget it.
 
 # Extrusion Multiplier
 ### :warning: **The extrusion multiplier (EM) is tuned for my particular filament brand/batch. You will have to tune yours for your particular filament.**
@@ -168,16 +170,16 @@ My primary profile is the "45 degree" profile. I orient the STLs to be at a 45 d
 ## Pros
 - **The main reason I do this** is simply for easier seam placement for large numbers of parts using "rear" seams.
     - Orient the desired seam edge towards the rear of the plate (preferably the sharpest edge).
-    - The alternative is "cost-based" *(similar to "sharpest corner" in Cura)*. Cost-based does a good job of placing the seams in corners, but crucially it does not align them. They tend to be scattered around the print at random corners.
+    - The alternative is "cost-based", which does a good job of placing the seams in corners, but crucially it does not align them. They tend to be scattered around the print at different corners.
     - Rear seams:
         - :heart_eyes:
         - ![](/Images/seams-rear.png)
     - vs. "corners" seams:
         - (ehhhhh)
         - ![](/Images/seams-corners.png)
-    - Force-aligning the seams can help with layer consistency. The other options ("ligned", "Cost-Based", and "Corners") can all allow the seam to jump around. That can cause artifacts like this:
+    - Force-aligning the seams can help with layer consistency. The other options can all allow the seam to jump around. That can cause artifacts like this:
         - You can see bands where the seam has hopped to a different edge of the print.
-        - *(This example is from Discord. The pressure advance is a bit too low, but it helps to better demonstrate the effect)*
+        - *(This example is has the pressure advance a bit too low, but it helps to better demonstrate the effect)*
         - ![](/Images/seamjump.png)
 - With CoreXY, 45 degree motions only use one motor. 
     - This can sometimes lead to better surface quality on straight walls. Patterns (VFAs) can sometimes occur when both motors are in use (with certain motor models).
@@ -185,23 +187,13 @@ My primary profile is the "45 degree" profile. I orient the STLs to be at a 45 d
 
 ## Cons
 - It can sometimes be harder to fit as many parts this way.
-- ~~Rear seams don't always align nicely on rounded corners.~~
-    - **UPDATE: The newer versions of SS seem to have improved this quite a bit!**
-    - ![](Images/ScatteredSeam-2.png) 
-    - Previously:\
-    *(there was no seam preview feature at the time either)*:
-    - ![](Images/ScatteredSeam.png)  
-        - I usually try to orient the sharpest corner to the rear of the place. 
-        - For objects with only rounded corners, I will sometimes manually place the seam.
-        - For some plates, I may also set the seam to "cost-based" or "corners" for certain objects.
-
 - Sometimes the seams can still be placed oddly. Have a quick look at the gcode preview before printing.
 
 Manual seam placement will **always** have the best results. This method is a compromise to save myself a lot of manual work for plates with large numbers of parts.
 
 ## Rotating Parts
 
-NEW: SuperSlicer allows you to set auto rotation when importing models in your printer profile:
+SuperSlicer allows you to set auto rotation when importing models in your printer profile:
 - ![](Images/auto-rotation.png) 
 
 To manually rotate, press **ctrl+a** to select all objects. \
@@ -210,7 +202,7 @@ Type the rotation amount in "Z" the box at the bottom right:
 - ![](Images/Rotation.png) 
 # Infill Line Widths
 
-The infill line widths are set to a high value in my profile (180%) to save some print time, and to help with infill layer adhesion strength. 
+The infill line widths are set to a high value in my profile (160%) to save some print time, and to help with infill layer adhesion strength. 
 
 **This proportionally reduces the amount of lines to be printed.** The overall coverage area is still 40%.
 
@@ -222,28 +214,47 @@ If you need greater top layer support, or are printing decorative / low infill p
 ## 40% Infill @ 110% Line Width
 - ![](Images/infill-110.png) 
 
-# Tips and Tricks
+# Suggested Changes for PLA
+
+These profiles should largely work **as-is** for PLA. You will just need to set up another filament profile.
+
+There is only one actual print setting that may need changing.
+
+## Print Settings
+- If using supports, you *may* need a larger **support z-offset** (`support_material_contact_distance`/`support_material_bottom_contact_distance`)
+    - PLA has better layer adhesion than ABS, so supports are harder to remove. 
+    - The current value of 0.1mm still reportedly works fine for PLA for some people, however. You just need to print some support tests on your own machine. 
+
+## Filament Profile
+You can just duplicate the provided ABS profile and make these changes to it:
+- Increase **fan speed** to 100% (`min_fan_speed`)
+- Set **layer time goal** to 5-10 seconds (`slowdown_below_layer_time`)
+- Set **chamber temperature** to 0
+    - This only actually does anything if you're [:page_facing_up:passing it to your PRINT_START macro](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/passing_slicer_variables.md).
+- You may need to set the filament profile's [:page_facing_up:**max volumetric speed**](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/determining_max_volumetric_flow_rate.md) (`filament_max_volumetric_speed`) a bit lower. 
+    - PLA doesn't always achieve the same flow rates that ABS can. 
+    - The filament profile settings **take precedence over the print settings profile**.
+        - This means you can have a "default" set in the print settings profile, and then tweak it here for individual filaments.
+- Set/calibrate the usual filament-specific parameters:
+    - **Temperatures**
+    - [:page_facing_up:**Pressure advance**](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/pressure_advance.md)
+        - (not actually a setting in SS, has to be set in printer.cfg or done with custom filament g-code)
+    - [:page_facing_up:**Extrusion multiplier**](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/extrusion_multiplier.md)
+
+
+---
+# Miscellaneous Tips and Tricks
 ## Changing PA Based on Nozzle Size
 
-You can add the below code snippet to your filament's **custom g-code** section in order to have different PA values for different nozzle sizes. Wider nozzles need lower PA. (Of course - modify it appropriately and replace the zeroes with the actual PA values.)
+You can add the below code snippet to your filament's **custom g-code** section in order to have different PA values for different nozzle sizes. Wider nozzles need lower PA.
 
 ```
-{if printer_settings_id =~/.*Voron.*/ and nozzle_diameter[0]==0.4}SET_PRESSURE_ADVANCE ADVANCE=0
-{elsif printer_settings_id =~/.*Voron.*/ and nozzle_diameter[0]==0.6}SET_PRESSURE_ADVANCE ADVANCE=0
-{elsif printer_settings_id =~/.*Voron.*/ and nozzle_diameter[0]==0.8}SET_PRESSURE_ADVANCE ADVANCE=0
+; Set pressure advance per-filament for different nozzle sizes
+{if nozzle_diameter[0]==0.4}SET_PRESSURE_ADVANCE ADVANCE=0.0x
+{elsif nozzle_diameter[0]==0.6}SET_PRESSURE_ADVANCE ADVANCE=0.0x
 {endif}
 ```
-
-This logic says:
-- IF printer settings profile name contains "Voron" (using regex)
-- AND nozzle size equals *\<value>*
-- THEN insert the gcode (SET_ PRESSURE ADVANCE ADVANCE=*\<value>*).
-
 Macro syntax: https://help.prusa3d.com/article/macros_1775
-- The "=\~" operator uses regex enlosed by forward slashes (=\~/regex/).
-- The "==" operator can be used for an exact match instead if you wish (=="string").
-
-
 ## Part Spacing / Plating
 Right click the "arrange" button to change part spacing. 
 
@@ -274,18 +285,58 @@ The SuperSlicer option is called `"No perimeters on bridge areas"`, located in t
 - ![](Images/void_with_bridges_01.png)
 - ![](Images/void_with_bridges_03.png)
 
+---
 # Profile Change Log
 
 Rather than having to re-import the profiles when updates are made, please check the change log occasionally to grab important settings changes / bug fixes.
 
 Use **ctrl + f** in SuperSlicer to find these settings by their internal names below.
-
+ 
+- **2022-11-09** (flip flopping edition!)
+    - ***ensure_vertical_shell_thickness*** - disable.
+        - Just saving some print time / material. 
+    - ***retract_lift_top*** and ***retract_before_travel*** - revert to defaults *(from the 2022-11-07 changes)*.
+        - These brought an additional minor improvement to small infill areas, but I eventually decided that the potential top surface scarring wasn't worth it. 
+        - If you are having small infill overextrusion issues, it may be worth trying still.
+        - Again, more reading on this subject is documented [:page_facing_up:here](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/troubleshooting/small_infill_areas_overextruded.md#not-connected-top-infill-superslicer).
+    - ***support_material_interface_layers*** - set to 2 (standard) - was 3 (heavy)
+        - The new default of 3 interface layers is a bit excessive in most cases.
+    - Minor rewording of comments in custom g-code sections
+- **2022-11-08**
+    - Add "Decorative Standard" profiles
+    - Rename .ini files
+    - ***wall_thickness_lines*** - set to 0.
+        - This was in my profiles but this setting apparently doesn't always export properly. It just disables the feature that tries to automatically change line thicknesses to match your desired overall line width.
+        - This setting is an oddball. For some reason it saves to `print_custom_variables` instead (paste `wall_thickness_lines = 0`)
+    - Decorative profiles:
+        - ***fill_pattern*** - set to monotonic
+        - ***fill_density*** - set to 10%
+    - ***resolution_internal*** - set to default (0.1mm)
+        - Cleanup, just resetting to new default. Shouldn't make any major difference
+- **2022-11-07**
+    - **Update profiles for SuperSlicer version 2.4.58.5.**
+    - These settings all come as a group. They were found to have a fairly significant improvement in small solid infill areas. Explanation [:page_facing_up:here](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/troubleshooting/small_infill_areas_overextruded.md#not-connected-top-infill-superslicer) and demonstration [:page_facing_up:here](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/troubleshooting/small_infill_areas_overextruded.md#demonstration).\
+    They may also have a positive effect on bulging perimeters around external features, but I am still testing this theory.
+        - ***infill_connection_solid*** - set to "not connected"
+        - ***infill_connection_top*** - set to "not connected"
+        - ***infill_connection_bottom*** - set to "not connected"
+        - ***infill_overlap*** - set to 25%
+        - ~~***retract_lift_top*** - set to "Not on top"~~ *(Reverted in 2022-11-09's flip-flopping editon, sorry)*
+        - ~~***retract_before_travel*** - set to 0 (was default / 2)~~ *(Reverted in 2022-11-09's flip-flopping editon, sorry)*
+    - New defaults modified:
+        - ***enforce_retract_first_layer*** - set to 0
+            - Stops Z hopping on first layer (this was the previous behavior)
+        - ~~***wipe_inside_end*** - set to 0~~
+            - Reverted. Was causing some seam gaps.
+- **2022-11-01**
+    - ***bridged_infill_margin*** - set to 300%.
+        - This can help prevent some bridges detaching at the ends. The previous value of 5mm was too high and causing excessive bridging.
 - **2022-10-06**
     - ***extrusion_width*** to 115% (was 125%)
         - This sets the default extrusion width. Any other widths set to 0 will use this default.
         - Some people had perimeter gapping issues at 125%.
-    - ***bridged_infill_margin*** to 5mm (was 200%)
-        - Can help edge pillowing in features floating on infill, especially with lower infill densities.
+    - ~~***bridged_infill_margin*** to 5mm (was 200%)~~
+        - ~~Can help edge pillowing in features floating on infill, especially with lower infill densities.~~
     - ***external_infill_margin*** to 4mm (was 150%)
         - Can help edge pillowing in features floating on infill, especially with lower infill densities.
     - ***first_layer_extrusion_width*** to 125% (was 0 / equal to default)
